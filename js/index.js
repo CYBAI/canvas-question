@@ -1,10 +1,3 @@
-const box = document.getElementById('box');
-const boxContext = box.getContext('2d');
-
-let rAF;
-let counter = 0;
-let lasttime = 0;
-
 const shuffleArray = (array) => {
   let m = array.length, t, i;
   while (m) {
@@ -16,45 +9,60 @@ const shuffleArray = (array) => {
   return array;
 };
 
-let imageLoaded = 0;
-const images = shuffleArray(Array.from(new Array(12), (val, idx) => {
-  const img = new Image();
-  img.src = `images/${idx}.png`;
-  img.onload = () => {
-    imageLoaded += 1;
-    if (imageLoaded === 12) {
-      drawloop();
+class ImageCanvas {
+  constructor() {
+    this.box = document.getElementById('box');
+    this.boxContext = this.box.getContext('2d');
+    this.rAF = null;
+    this.counter = 0;
+    this.lasttime = 0;
+    this.imageLoaded = 0;
+  }
+
+  init() {
+    this.order = shuffleArray(Array.from(new Array(12), (val, idx) => idx));
+    this.images = shuffleArray(Array.from(new Array(12), (val, idx) => {
+      const img = new Image();
+      img.src = `images/${idx}.png`;
+      img.onload = () => {
+        this.imageLoaded += 1;
+        if (this.imageLoaded === 12) {
+          this.drawloop();
+        }
+      };
+      return img;
+    }));
+  }
+
+  draw() {
+    const thisImg = this.images[this.counter];
+    const thisOrder = this.order[this.counter];
+    const x = (this.box.width / 4) * (thisOrder % 4);
+    const y = (this.box.height / 3) * Math.floor((thisOrder + 1) % 3);
+    this.boxContext.drawImage(
+      thisImg,
+      x, y,
+      this.box.width / 4, this.box.height / 3
+    );
+  }
+
+  drawloop() {
+    if (this.counter > 11 && this.rAF) {
+      cancelAnimationFrame(this.rAF);
+      this.rAF = undefined;
+      console.log('Show 12 images done.');
+      return;
     }
-  };
-  return img;
-}));
 
-const order = shuffleArray(Array.from(new Array(12), (val, idx) => idx));
-
-function draw() {
-  const thisImg = images[counter];
-  const x = (box.width / 4) * (order[counter] % 4);
-  const y = (box.height / 3) * Math.floor((order[counter] + 1) % 3);
-  boxContext.drawImage(
-    thisImg,
-    x, y,
-    box.width / 4, box.height / 3
-  );
+    const now = performance.now();
+    if (now - this.lasttime > 1000 || this.lasttime === 0) {
+      this.draw();
+      this.lasttime = now;
+      this.counter += 1;
+    }
+    this.rAF = requestAnimationFrame(this.drawloop.bind(this));
+  }
 }
 
-function drawloop() {
-  if (counter > 11 && rAF) {
-    cancelAnimationFrame(rAF);
-    rAF = undefined;
-    console.log('Show 12 images done.');
-    return;
-  }
-
-  const now = performance.now();
-  if (now - lasttime > 10000 || lasttime === 0) {
-    draw();
-    lasttime = now;
-    counter += 1;
-  }
-  rAF = requestAnimationFrame(drawloop);
-}
+const canvas = new ImageCanvas();
+canvas.init();
