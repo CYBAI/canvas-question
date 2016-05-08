@@ -38,7 +38,7 @@ function draw() {
   boxContext.drawImage(
     thisImg,
     x, y,
-    box.width / 4, box.height / 4
+    box.width / 4, box.height / 3
   );
 }
 
