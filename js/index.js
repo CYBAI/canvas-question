@@ -4,17 +4,36 @@ const boxContext = box.getContext('2d');
 let rAF;
 let counter = 0;
 let lasttime = 0;
-const resources = Array.from(new Array(12), (val, idx) => `images/${idx}.png`);
+let imageLoaded = 0;
+const images = Array.from(new Array(12), (val, idx) => {
+  const img = new Image();
+  img.src = `images/${idx}.png`;
+  img.onload = () => {
+    imageLoaded += 1;
+    if (imageLoaded === 12) {
+      drawloop();
+    }
+  };
+  return img;
+});
 
 function draw() {
-  const x = (counter + 1) * 10;
-  const y = (counter + 1) * 10;
-  boxContext.fillText(resources[counter], x, y);
+  const thisImg = images[counter];
+  const x = (box.width / 4) * (counter % 4);
+  const y = (box.height / 3) * Math.floor((counter + 1) % 3);
+  boxContext.drawImage(
+    thisImg,
+    x, y,
+    box.width / 4, box.height / 4
+  );
 }
 
-(function drawloop() {
-  if (counter > 12 && rAF) {
-    return cancelAnimationFrame(rAF);
+function drawloop() {
+  if (counter > 11 && rAF) {
+    cancelAnimationFrame(rAF);
+    rAF = undefined;
+    console.log('Show 12 images done.');
+    return;
   }
 
   const now = performance.now();
@@ -24,4 +43,4 @@ function draw() {
     counter += 1;
   }
   rAF = requestAnimationFrame(drawloop);
-}());
+}
