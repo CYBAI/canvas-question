@@ -55,7 +55,7 @@ class ImageCanvas {
     }
 
     const now = performance.now();
-    if (now - this.lasttime > 1000 || this.lasttime === 0) {
+    if (now - this.lasttime > 10000 || this.lasttime === 0) {
       this.draw();
       this.lasttime = now;
       this.counter += 1;
