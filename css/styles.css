@@ -8,6 +8,7 @@
     margin:auto;
     width: 80%;
     height: 60%;
+    border: 1px solid #000;
   }
 }
 @media all and (orientation:landscape) {
@@ -20,5 +21,6 @@
     margin:auto;
     width: 70%;
     height: 52.5%;
+    border: 1px solid #000;
   }
 }
