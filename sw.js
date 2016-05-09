@@ -1,10 +1,9 @@
 const images = Array.from(new Array(12), (val, idx) => `images/${idx}.png`);
 const fundamentals = [
-  '/',
-  '/index.html',
-  '/css/styles.css',
-  '/js/index.js',
-  '/sw.js'
+  'index.html',
+  'css/styles.css',
+  'js/index.js',
+  'sw.js'
 ];
 
 const offlineFundamentals = fundamentals.concat(images);
